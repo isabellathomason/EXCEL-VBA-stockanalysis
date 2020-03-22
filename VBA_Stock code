@@ -1,0 +1,78 @@
+Sub VBA_Stock()
+
+Dim ws As Worksheet
+Dim Ticker As String
+Dim Vol As Double
+Dim YearOpen As Double
+Dim YearClose As Double
+Dim YearlyChange As Double
+Dim PercentChange As Double
+Dim SummaryTableRow As Integer
+
+On Error Resume Next
+
+For Each ws In ThisWorkbook.Worksheets
+  
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Stock Volume"
+
+    Summary_Table_Row = 2
+
+        For I = 2 To ws.UsedRange.Rows.Count
+             If ws.Cells(I + 1, 1).Value <> ws.Cells(I, 1).Value Then
+            
+            Ticker = ws.Cells(I, 1).Value
+            Vol = ws.Cells(I, 7).Value
+
+            YearOpen = ws.Cells(I, 3).Value
+            YearClose = ws.Cells(I, 6).Value
+
+            YearlyChange = YearClose - YearOpen
+            PercentChange = (YearClose - YearOpen) / YearClose
+
+            ws.Cells(SummaryTableRow, 9).Value = Ticker
+            ws.Cells(SummaryTableRow, 10).Value = YearlyChange
+            ws.Cells(SummaryTableRow, 11).Value = PercentChange
+            ws.Cells(SummaryTableRow, 12).Value = Vol
+            SummaryTableRow = SummaryTableRow + 1
+
+             Vol = 0
+        
+        End If
+
+    Next I
+    
+ws.Columns("K").NumberFormat = "0.00%"
+
+
+
+For each ws In ThisWorkbook.Worksheets
+
+
+    Dim rg As Range
+    Dim r As Long
+    Dim g As Long
+    Dim ConditionalFormat As Range
+    
+    Set rg = ws.Range("J2", Range("J2").End(xlDown))
+    g = rg.Cells.Count
+    
+    For r = 1 To g
+    Set ConditionalFormat = rg(r)
+    Select Case ConditionalFormat
+        Case Is >= 0
+            With ConditionalFormat
+                .Interior.Color = vbGreen
+            End With
+        Case Is < 0
+            With ConditionalFormat
+                .Interior.Color = vbRed
+            End With
+       End Select
+    Next r
+
+Next ws
+
+End Sub
